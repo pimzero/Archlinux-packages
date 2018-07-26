@@ -15,7 +15,7 @@ replaces=()
 backup=()
 options=()
 install=
-source=('dns::git+ssh://gitolite@git.pimzero.com:222/users/pim/my_dns.git'
+source=('dns::git+https://git.pimzero.com/users/pim/my_dns.git/'
         'dns.service')
 sha256sums=('SKIP'
             '28e5f9ccf44ce056cba393aca6bc485d8d9de48be33836ddd93fcefc495cd46c')
