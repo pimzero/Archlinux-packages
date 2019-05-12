@@ -1,0 +1,13 @@
+diff --git a/src/pfcdemoreftsc.cpp b/src/pfcdemoreftsc.cpp
+index 40659e9..3532205 100644
+--- a/src/pfcdemoreftsc.cpp
++++ b/src/pfcdemoreftsc.cpp
+@@ -18,7 +18,7 @@
+  */
+ 
+ extern "C" void add_calibration(uint64_t x);
+-asm volatile(
++asm(
+ ".text\n\t"
+ ".global add_calibration\n\t"
+ "add_calibration:\n\t"

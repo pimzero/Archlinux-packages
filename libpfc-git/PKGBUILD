@@ -1,0 +1,43 @@
+# Maintainer: Pierre Marsais <pim@lse.epita.fr>
+pkgname=libpfc
+pkgrel=1
+pkgver=r35.5145656
+pkgdesc="A small library and kernel module for easy access to x86 performance monitor counters under Linux"
+arch=('x86_64')
+url=""
+license=('MIT')
+groups=()
+depends=()
+makedepends=('git' 'meson')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+replaces=()
+options=()
+install=
+source=('git+https://github.com/obilaniu/libpfc.git'
+	'fix-volatile.patch')
+sha256sums=('SKIP' '312840e3c608a9dfa3b2dead1db2ca758d01172de01e8333ac2b949ab8ba80ff')
+
+pkgver() {
+	cd "$srcdir/libpfc"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+	cd "$srcdir/libpfc"
+	pwd
+	ls "${srcdir}"
+	patch --forward --strip=1 --input="${srcdir}/fix-volatile.patch"
+}
+
+build() {
+	mkdir -p "$srcdir/build"
+	cd "$srcdir/build"
+	meson "$srcdir/libpfc" -Dbuildtype=release --prefix="$pkgdir"
+	ninja
+}
+
+package() {
+	cd "$srcdir/build"
+	ninja install
+}
