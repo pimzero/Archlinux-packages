@@ -1,5 +1,6 @@
 # Maintainer: Pierre Marsais <pim@lse.epita.fr>
-pkgname=libpfc
+_pkgbase=libpfc-git
+pkgname=libpfc-git
 pkgrel=1
 pkgver=r35.5145656
 pkgdesc="A small library and kernel module for easy access to x86 performance monitor counters under Linux"
@@ -7,7 +8,7 @@ arch=('x86_64')
 url=""
 license=('MIT')
 groups=()
-depends=()
+depends=('dkms')
 makedepends=('git' 'meson')
 provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
@@ -15,8 +16,11 @@ replaces=()
 options=()
 install=
 source=('git+https://github.com/obilaniu/libpfc.git'
-	'fix-volatile.patch')
-sha256sums=('SKIP' '312840e3c608a9dfa3b2dead1db2ca758d01172de01e8333ac2b949ab8ba80ff')
+	'fix-volatile.patch'
+	'dkms.conf')
+sha256sums=('SKIP'
+	    '312840e3c608a9dfa3b2dead1db2ca758d01172de01e8333ac2b949ab8ba80ff'
+	    '296882ecf12e978e739afa7d739e8fed251cfe8a58e43661be4ae88aefc0adda')
 
 pkgver() {
 	cd "$srcdir/libpfc"
@@ -33,11 +37,21 @@ prepare() {
 build() {
 	mkdir -p "$srcdir/build"
 	cd "$srcdir/build"
-	meson "$srcdir/libpfc" -Dbuildtype=release --prefix="$pkgdir"
+	meson "$srcdir/libpfc" -Dbuildtype=release --prefix="$pkgdir/usr"
 	ninja
 }
 
 package() {
 	cd "$srcdir/build"
 	ninja install
+
+	rm -f "$pkgdir/bin/pfc.ko"
+
+	install -Dm644 "$srcdir/dkms.conf" "${pkgdir}"/usr/src/${_pkgbase}-${pkgver}/dkms.conf
+
+	sed -e "s/@_PKGBASE@/${_pkgbase}/" \
+		-e "s/@PKGVER@/${pkgver}/" \
+		-i "${pkgdir}"/usr/src/${_pkgbase}-${pkgver}/dkms.conf
+
+	cp -r ${srcdir}/libpfc/* "${pkgdir}"/usr/src/${_pkgbase}-${pkgver}/
 }
