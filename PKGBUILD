@@ -18,7 +18,7 @@ install=
 source=('dns::git+https://git.pimzero.com/users/pim/my_dns.git/'
         'dns.service')
 sha256sums=('SKIP'
-            '28e5f9ccf44ce056cba393aca6bc485d8d9de48be33836ddd93fcefc495cd46c')
+            'c6e61ce1acaa1e8aa2d360125b1495f52d48332bcb9ba16c5f1b341d427d171e')
 
 pkgver() {
 	cd "$srcdir/${pkgname%-git}"
