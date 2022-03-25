@@ -1,0 +1,55 @@
+From 8e4233e0c72c08d1a64b31a4b3b92e784f9bea9f Mon Sep 17 00:00:00 2001
+From: Pierre Marsais <pmarsais@google.com>
+Date: Fri, 25 Mar 2022 23:45:14 +0000
+Subject: [PATCH] Add --udev-rules flag to provide path for udev rules
+
+This allow the user to install udev rules somewhere else than the
+hardcoded `/etc/udev/rules.d/50-rogdrv.rules` default. This is needed to
+run this script as another user than root, or for building packages.
+---
+ install_udev | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/install_udev b/install_udev
+index 620ad04..07afb04 100755
+--- a/install_udev
++++ b/install_udev
+@@ -1,11 +1,21 @@
+ #!/usr/bin/env python3
+ 
++import argparse
+ from rog.device.base import DeviceMeta
+ 
+ UDEV_RULES = '/etc/udev/rules.d/50-rogdrv.rules'
+ 
+ 
+ def main():
++    parser = argparse.ArgumentParser()
++    parser.add_argument(
++            '--udev-rules',
++            dest='udev_rules',
++            default=UDEV_RULES,
++    )
++    args = parser.parse_args()
++    udev_rules = args.udev_rules
++
+     rules = ['KERNEL=="uinput", MODE="0666"']
+ 
+     assign = (
+@@ -28,11 +38,11 @@ def main():
+             'ATTRS{{idProduct}}=="{:04x}"'.format(c.product_id),
+         ) + assign))
+ 
+-    with open(UDEV_RULES, 'w') as f:
++    with open(udev_rules, 'w') as f:
+         for rule in rules:
+             f.write(rule + '\n')
+ 
+-    print('udev rules are saved into "{}"'.format(UDEV_RULES))
++    print('udev rules are saved into "{}"'.format(udev_rules))
+     print('run to apply them:')
+     print('$ sudo udevadm control --reload-rules')
+     print('$ sudo udevadm trigger')
+-- 
+2.35.1
+

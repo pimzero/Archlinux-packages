@@ -1,0 +1,55 @@
+# Maintainer: Pierre Marsais <pim@lse.epita.fr>
+pkgname=rogdrv-git
+pkgrel=1
+pkgver=r141.7cbf912
+pkgdesc="ASUS ROG userspace mouse driver for Linux"
+arch=('any')
+url=""
+license=('GPL')
+groups=()
+depends=('python-evdev' 'python-hidapi')
+makedepends=('git' 'python-setuptools')
+provides=("${pkgname%-git}")
+conflicts=("${pkgname%-git}")
+replaces=()
+options=()
+install=
+source=('git+https://github.com/kyokenn/rogdrv.git'
+	'0001-Add-udev-rules-flag-to-provide-path-for-udev-rules.patch')
+sha256sums=('SKIP'
+	    'SKIP')
+
+pkgver() {
+	cd "$srcdir/${pkgname%-git}"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare () {
+	cd "$srcdir/${pkgname%-git}"
+	patch --forward --strip=1 --input="${srcdir}/0001-Add-udev-rules-flag-to-provide-path-for-udev-rules.patch"
+}
+
+build() {
+	cd "$srcdir/${pkgname%-git}"
+	python setup.py build
+	python install_udev --udev-rules="./50-rogdrv.rules"
+}
+
+package() {
+	cd "$srcdir/${pkgname%-git}"
+	python setup.py install --root="$pkgdir" --optimize=1
+	mkdir -p "$pkgdir/etc/udev/rules.d"
+	install -Dm644 '50-rogdrv.rules' "$pkgdir/etc/udev/rules.d/50-rogdrv.rules"
+}
+
+post_install() {
+	udevadm control --reload-rules &> /dev/null
+}
+
+post_upgrade() {
+	post_install
+}
+
+post_remove() {
+	udevadm control --reload-rules &> /dev/null
+}
