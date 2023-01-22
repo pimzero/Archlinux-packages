@@ -1,7 +1,7 @@
 # Maintainer: Pierre Marsais <pim@lse.epita.fr>
 pkgname=dns-git
 pkgrel=1
-pkgver=r12.8340c23
+pkgver=r39.ed57e33
 pkgdesc="A dns server"
 arch=('x86_64')
 url=""
@@ -15,7 +15,7 @@ replaces=()
 backup=('etc/dns.conf')
 options=()
 install=
-source=('dns::git+https://git.pimzero.com/users/pim/my_dns.git/'
+source=('dns::git+https://github.com/pimzero/my_dns.git'
         'dns.service')
 sha256sums=('SKIP'
             'c6e61ce1acaa1e8aa2d360125b1495f52d48332bcb9ba16c5f1b341d427d171e')
